@@ -1,0 +1,9 @@
+Django
+Pillow
+Psycopg-binary
+Pyscopg2
+Psycopg2-binary
+Django-extensions
+Django-crispy-forms
+Django-crispy-bootstrap5
+Django-filter
