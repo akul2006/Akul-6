@@ -276,7 +276,7 @@ def add_member(request):
         address = request.POST.get('address')
         
         Member.objects.create(name=name, email=email, phone=phone, address=address)
-        return redirect('admin_dashboard')
+        return redirect(reverse('admin_dashboard') + '?tab=members')
 
 def edit_book(request):
     if request.method == "POST":
@@ -345,6 +345,7 @@ def return_book(request):
         circulation = get_object_or_404(Circulation, id=circulation_id)
         
         if circulation.status == 'issued':
+            book = circulation.book
             circulation.return_date = date.today()
             circulation.status = 'returned'
             
@@ -357,14 +358,13 @@ def return_book(request):
                 circulation.fine_amount = fine_amount
                 
                 # Create a penalty record
-                Penalty.objects.create(member=circulation.member, book=circulation.book, due_date=circulation.due_date, days_overdue=overdue_days, amount=fine_amount, reason=f"Overdue: {circulation.book.title}", status='unpaid')
+                Penalty.objects.create(member=circulation.member, book=circulation.book, due_date=circulation.due_date, days_overdue=overdue_days, amount=fine_amount, reason=f"Overdue: {circulation.book.title}", status='Paid')
                 add_notification(f"Book '{book.title}' returned overdue by {circulation.member.name}. Penalty: {fine_amount}")
             else:
                 add_notification(f"Book '{book.title}' returned by {circulation.member.name}")
             
             circulation.save()
             
-            book = circulation.book
             book.available_quantity += 1
             book.save()
             
