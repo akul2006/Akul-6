@@ -329,11 +329,18 @@ def add_user(request):
         is_superuser = request.POST.get('is_superuser') == 'True'
         
         if username:
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.is_superuser = is_superuser
-            user.is_staff = is_superuser # Admins are usually staff
-            user.save()
-        return redirect('admin_dashboard')
+            if User.objects.filter(username=username).exists():
+                add_notification(f"Error: Username '{username}' already exists.")
+            else:
+                try:
+                    user = User.objects.create_user(username=username, email=email, password=password)
+                    user.is_superuser = is_superuser
+                    user.is_staff = is_superuser # Admins are usually staff
+                    user.save()
+                    add_notification(f"User '{username}' added successfully.")
+                except Exception as e:
+                    add_notification(f"Error adding user: {e}")
+        return redirect(reverse('admin_dashboard') + '?tab=users')
 
 def add_penalty(request):
     if request.method == "POST":
