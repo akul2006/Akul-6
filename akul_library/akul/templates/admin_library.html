@@ -872,11 +872,12 @@
             </div>
             <div class="books-grid">
                 {% for publisher in publishers %}
-                <div class="book-card" onclick="openPublisherModal(this)" data-name="{{ publisher.name }}" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; cursor: pointer;">
+                <div class="book-card" onclick="openPublisherModal(this)" data-name="{{ publisher.name }}" title="Click to view books" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; cursor: pointer;">
                     <h3 style="text-align: center;">{{ publisher.name }}</h3>
                     <p style="margin-top: 10px; color: #666;">{{ publisher.book_set.count }} Books</p>
                     
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="action-btn edit-btn" onclick="event.stopPropagation(); openPublisherModal(this.closest('.book-card'))" style="background-color: #17a2b8;" title="View Books">👁</button>
                         <button class="action-btn edit-btn" onclick="event.stopPropagation(); openEditPublisherModal('{{ publisher.id }}', '{{ publisher.name|escapejs }}')">✎</button>
                         <form method="POST" action="{% url 'delete_publisher' %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this publisher?');">
                             {% csrf_token %}
@@ -1072,6 +1073,17 @@
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Update Publisher</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Publisher Books Modal -->
+    <div id="publisherBooksModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePublisherModal()">&times;</span>
+            <h2 id="modalPublisherName" style="margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">Publisher Name</h2>
+            <div id="modalBooksList" style="max-height: 400px; overflow-y: auto;">
+                <!-- Books will be populated here -->
+            </div>
         </div>
     </div>
 
